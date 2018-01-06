@@ -1,0 +1,7 @@
+*txt
+*pyc
+*/*dat
+log/*
+.idea
+data/*
+*/*pyc

@@ -1,0 +1,10 @@
+FROM python:2.7.14-jessie
+
+WORKDIR /usr/src/app
+
+RUN pip install --no-cache-dir -r requirements.txt && mkdir data
+
+COPY ../crawler.py ./
+COPY ../status.py ./
+
+#CMD [ "python", "./crawler.py" ]
