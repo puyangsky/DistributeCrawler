@@ -16,6 +16,8 @@ def create_ephemeral_node():
     if zk.exists(path):
         zk.delete(path)
     value = "data_%s" % str(uuid.uuid4())
+    zk.ensure_path(path)
+    zk.delete(path)
     zk.create(path, ephemeral=True, value=value)
     time.sleep(3)
     print("create node at %s, value: %s, zk exit..." % (path, value))

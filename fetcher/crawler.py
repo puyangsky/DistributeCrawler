@@ -2,10 +2,12 @@
 # -*- coding:utf-8 -*-
 import json
 import logging
-import requests
 import time
 from threading import *
+
 import redis
+import requests
+
 import status
 
 handled_count = 0
@@ -14,7 +16,7 @@ logging.basicConfig(level=logging.DEBUG,
                     datefmt='%a, %d %b %Y %H:%M:%S',
                     filename='log/crawler.log',
                     filemode='w')
-# 去掉requests的多余无用的log
+# remove useless log in requests
 logging.getLogger("requests").setLevel(logging.ERROR)
 logging.getLogger("urllib3").setLevel(logging.WARNING)
 
@@ -90,7 +92,7 @@ class CrawlerThread(Thread):
 
     def run(self):
         while True:
-            # TODO(ytou): use `lrange index index+100` to batch fetch data instead of fetching one by one
+            # TODO(puyangsky): use `lrange index index+100` to batch fetch data instead of fetching one by one
             origin_url = self.redis_conn.rpop(self.key)
             if origin_url is None:
                 logging.warning("There is no urls left in redis, exit thread...")
@@ -131,7 +133,7 @@ class CrawlerThread(Thread):
                     if "res" in js and js["res"] is False:
                         # logging.error("%s drop useless url: %s, res: %s" % (self.thread_id, key, value))
                         continue
-                    js = unicode_to_utf8(js)
+                    js = self.unicode_to_utf8(js)
                     f.write("%s\t%s\n" % (key, json.dumps(js, ensure_ascii=False)))
             now = time.time()
             global handled_count
@@ -149,21 +151,21 @@ class CrawlerThread(Thread):
             f.write("%s\n" % url)
         self.error_lock.release()
 
-
-def unicode_to_utf8(js):
-    if type(js) == dict:
-        norm = {}
-        for key in js:
-            norm[unicode_to_utf8(key)] = unicode_to_utf8(js[key])
-        return norm
-    if type(js) == list:
-        norm = []
-        for item in js:
-            norm.append(unicode_to_utf8(item))
-        return norm
-    if type(js) == unicode:
-        return js.encode("utf-8", "ignore")
-    return js
+    @staticmethod
+    def unicode_to_utf8(self, js):
+        if type(js) == dict:
+            norm = {}
+            for key in js:
+                norm[self.unicode_to_utf8(key)] = self.unicode_to_utf8(js[key])
+            return norm
+        if type(js) == list:
+            norm = []
+            for item in js:
+                norm.append(self.unicode_to_utf8(item))
+            return norm
+        if type(js) == unicode:
+            return js.encode("utf-8", "ignore")
+        return js
 
 
 if __name__ == '__main__':

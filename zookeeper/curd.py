@@ -29,6 +29,4 @@ print("There are %s children with names %s" % (len(children), children))
 res = zk.delete("/test/zk1/node")
 print("Delete /test/zk1/node, res: %r" % res)
 
-zk.create()
-
 zk.stop()
