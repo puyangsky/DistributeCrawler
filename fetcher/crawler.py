@@ -21,7 +21,7 @@ logging.getLogger("requests").setLevel(logging.ERROR)
 logging.getLogger("urllib3").setLevel(logging.WARNING)
 
 
-class XmlyCrawler(object):
+class Crawler(object):
     def __init__(self, host='localhost', port=6379, thread_num=10, bucket_size=200, result_file="data/result-%s"
                                                                                                 ".dat"):
         pool = redis.ConnectionPool(host=host, port=port, db=0)
@@ -169,6 +169,6 @@ class CrawlerThread(Thread):
 
 
 if __name__ == '__main__':
-    c = XmlyCrawler(host='10.1.196.4', port=7379)
+    c = Crawler(host='localhost', port=6379)
     # c.remove_queue()
     c.crawl()
