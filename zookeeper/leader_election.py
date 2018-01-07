@@ -8,27 +8,39 @@ import threading
 import logging
 
 logging.basicConfig()
-my_id = uuid.uuid4()
 
 
 class ZkThread(threading.Thread):
-    def __init__(self):
+    def __init__(self, host, port):
         super(ZkThread, self).__init__()
         self.CRAWLER_START_PATH = "/crawler/start"
         self.START_FLAG = "start"
         self.election_path = "/election_path"
-        self.zk = KazooClient(hosts='127.0.0.1:2181')
+        self.my_id = uuid.uuid4()
+        self.zk = KazooClient(hosts=":".join((host, port)))
         self.zk.start()
         self.watch()
 
+    def load_seed(self):
+        """
+        load seed by master
+        to be override by user
+        """
+        pass
+
+    def fetch(self):
+        """
+        fetch data by slave
+        to be override by user
+        """
+        pass
+
     def leader_callback(self):
-        print("[Master] I am the leader {}".format(str(my_id)))
+        print("[Master] I am the leader {}".format(str(self.my_id)))
+        self.load_seed()
         if not self.zk.exists(self.CRAWLER_START_PATH):
             self.zk.create(path=self.CRAWLER_START_PATH, value=self.START_FLAG, ephemeral=True)
-            print("[Master] {} triggered start flag".format(str(my_id)))
-        while True:
-            print("[Master] {} is working! ".format(str(my_id)))
-            time.sleep(5)
+            print("[Master] {} triggered start flag".format(str(self.my_id)))
 
     def run(self):
         election = self.zk.Election(self.election_path)
@@ -44,6 +56,6 @@ class ZkThread(threading.Thread):
 
 
 if __name__ == '__main__':
-    election_thread = ZkThread()
+    election_thread = ZkThread("localhost", 2181)
     election_thread.start()
     election_thread.join()
