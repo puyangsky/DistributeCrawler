@@ -29,6 +29,7 @@ class ZkThread(threading.Thread):
                                                port=config_util.redis_port,
                                                db=0)
         self.register_node()
+        self.watch()
 
     def register_node(self):
         self.zk.start()
@@ -72,7 +73,7 @@ class ZkThread(threading.Thread):
         election.run(self.leader_callback)
 
     def run(self):
-        self.watch()
+        self.elect()
 
     def watch(self):
         @self.zk.DataWatch(self.master_path)
@@ -81,8 +82,6 @@ class ZkThread(threading.Thread):
                 if not self.master_flag:
                     print("[Slave] crawling is starting, %s" % data)
                     self.thread_pool.submit(fn=self.fetch)
-            else:
-                self.elect()
 
         @self.zk.ChildrenWatch(self.node_path)
         def watch_node(children):
