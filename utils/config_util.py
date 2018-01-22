@@ -5,7 +5,7 @@ from __future__ import print_function
 
 """
 @author: puyangsky
-@file: config_parser.py
+@file: config_util.py
 @time: 2018/1/6 下午5:08
 """
 import ConfigParser
@@ -19,4 +19,5 @@ if not os.path.isfile(config_path):
 config = ConfigParser.ConfigParser()
 config.read(config_path)
 
-print(config.get('redis', 'redis_host'))
+redis_host = config.get('redis', 'redis_host')
+zk_host = config.get('zookeeper', 'zookeeper_host')
