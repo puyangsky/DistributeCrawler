@@ -14,7 +14,6 @@ class MyLog:
     def __init__(self):
         parent_dir = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
         log_file_path = os.path.join(parent_dir, 'log/crawler.log')
-        print(log_file_path)
         logging.basicConfig(level=logging.DEBUG,
                             format='%(asctime)s %(filename)s[line:%(lineno)d] %(levelname)s %(message)s',
                             datefmt='%a, %d %b %Y %H:%M:%S',
