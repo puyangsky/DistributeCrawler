@@ -8,7 +8,7 @@ from __future__ import print_function
 @file: config_util.py
 @time: 2018/1/6 下午5:08
 """
-import ConfigParser
+import configparser
 import os
 
 parent_dir = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
@@ -16,8 +16,9 @@ config_path = os.path.join(parent_dir, 'config.cfg')
 if not os.path.isfile(config_path):
     raise BaseException('Config file not exists')
 
-config = ConfigParser.ConfigParser()
+config = configparser.ConfigParser()
 config.read(config_path)
 
 redis_host = config.get('redis', 'redis_host')
+redis_port = int(config.get('redis', 'redis_port'))
 zk_host = config.get('zookeeper', 'zookeeper_host')
